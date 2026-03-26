@@ -7,30 +7,29 @@ const slackWebhook = "https://hooks.slack.com/services/T03FQATAADD/B0AP4S7896G/I
 
 async function sendToSlack(text) {
   try {
-    const res = await fetch(slackWebhook, {
+    const response = await fetch(slackWebhook, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json"
+      },
       body: JSON.stringify({ text })
     });
 
-    const responseText = await res.text();
-    console.log("Slack response:", responseText);
-  } catch (err) {
-    console.error("Slack error:", err);
+    console.log("Slack response:", await response.text());
+  } catch (error) {
+    console.error("Slack error:", error);
   }
 }
 
 app.post("/clockin", async (req, res) => {
-  const employee = req.body.employee || "Unknown";
-  const time = req.body.time || "Unknown";
+  const { employee, time } = req.body;
 
   await sendToSlack(`🟢 ${employee} clocked in at ${time}`);
   res.send("Clock-in notification sent");
 });
 
 app.post("/clockout", async (req, res) => {
-  const employee = req.body.employee || "Unknown";
-  const time = req.body.time || "Unknown";
+  const { employee, time } = req.body;
 
   await sendToSlack(`🔴 ${employee} clocked out at ${time}`);
   res.send("Clock-out notification sent");
